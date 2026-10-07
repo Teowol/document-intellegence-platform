@@ -1,0 +1,40 @@
+# Django & Core
+Django==5.2
+django-environ==0.14.0
+psycopg[binary]==3.3.6
+
+# Authentication & Authorization
+django-allauth==0.61.1
+
+# Async & Task Queue
+celery==5.4.0
+django-celery-beat==2.5.0
+django-celery-results==2.5.1
+redis==5.0.7
+
+# API & Serialization
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# LLM & Embeddings
+openai==1.51.0
+tiktoken==0.7.0
+langchain-text-splitters==0.2.2
+
+# Database & Vector Search
+pgvector==0.3.0
+
+# File Processing
+python-magic-bin==0.4.14
+PyPDF2==3.0.1
+openpyxl==3.1.5
+pandas==2.2.3
+
+# Server & Deployment
+gunicorn==23.0.0
+whitenoise==6.7.0
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2024.1
+requests==2.32.3

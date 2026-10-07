@@ -1,0 +1,157 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "document-intelligence-platform"
+version = "0.1.0"
+description = "AI-powered research & document intelligence platform with semantic search and grounded QA"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Teoma", email = "teomanunal06@gmail.com"}
+]
+keywords = ["django", "ai", "semantic-search", "rag", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+]
+
+dependencies = [
+    # Django & Core
+    "Django==5.2",
+    "django-environ==0.21.0",
+    "psycopg[binary]==3.20.1",
+    
+    # Authentication & Authorization
+    "django-allauth==0.61.1",
+    
+    # Async & Task Queue
+    "celery==5.4.0",
+    "django-celery-beat==2.5.0",
+    "django-celery-results==2.5.1",
+    "redis==5.0.7",
+    
+    # API & Serialization
+    "djangorestframework==3.14.0",
+    "django-cors-headers==4.3.1",
+    
+    # LLM & Embeddings
+    "openai==1.51.0",
+    "tiktoken==0.7.0",
+    "langchain-text-splitters==0.2.2",
+    
+    # Database & Vector Search
+    "pgvector==0.3.0",
+    
+    # File Processing
+    "python-magic-bin==0.4.14",
+    "PyPDF2==4.2.0",
+    "openpyxl==3.11.0",
+    "pandas==2.2.3",
+    
+    # Server & Deployment
+    "gunicorn==23.0.0",
+    "whitenoise==6.7.0",
+    
+    # Utilities
+    "python-dateutil==2.8.2",
+    "pytz==2024.1",
+    "requests==2.32.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.4",
+    "pytest-django==4.8.0",
+    "pytest-cov==5.0.0",
+    "factory-boy==3.3.1",
+    "faker==24.14.0",
+    "ruff==0.6.9",
+    "black==24.10.0",
+    "isort==5.13.2",
+    "pre-commit==3.8.0",
+    "django-debug-toolbar==4.3.0",
+    "django-extensions==3.2.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/Teowol/document-intellegence-platform"
+Repository = "https://github.com/Teowol/document-intellegence-platform.git"
+Issues = "https://github.com/Teowol/document-intellegence-platform/issues"
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "--cov=src --cov-report=html --cov-report=term-missing"
+testpaths = ["src"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/test_*.py",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "migrations",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "C",      # flake8-comprehensions
+    "B",      # flake8-bugbear
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "W503",   # line break before binary operator
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "apps"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | migrations
+  | __pycache__
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+known_first_party = ["config", "apps"]
