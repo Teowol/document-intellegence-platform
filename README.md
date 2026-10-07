@@ -1,80 +1,80 @@
-# AI Destekli Araştırma & Doküman İstihbaratı Platformu
+# AI-Powered Research & Document Intelligence Platform
 
-Kullanıcıların **PDF, Excel, CSV, TXT ve Markdown** dosyalarını yükleyip **semantik arama** yapabildiği ve yalnızca kendi dokümanlarından beslenen, **kaynak gösteren (grounded) soru-cevap** alabildiği güvenli bir platform.
+A secure platform where users can upload **PDF, Excel, CSV, TXT, and Markdown** files, perform **semantic search**, and receive **grounded question-answering** responses sourced exclusively from their own documents.
 
-## 🎯 Temel Özellikler
+## 🎯 Key Features
 
-- 📄 **Çoklu Dosya Desteği:** PDF, Excel, CSV, TXT, Markdown
-- 🔍 **Semantik Arama:** OpenAI embeddings + pgvector ile anlam bazlı arama
-- 🤖 **Kaynak Gösteren QA:** LLM function calling ile belgelerinizden beslenmiş cevaplar
-- 🔐 **Yetkilendirme (RBAC):** Kullanıcılar yalnızca yetkili oldukları dokümanlara erişir
-- ⚡ **Asenkron İşleme:** Celery ile dosya parsing, chunking, embedding arka planda çalışır
+- 📄 **Multi-Format Support:** PDF, Excel, CSV, TXT, Markdown
+- 🔍 **Semantic Search:** Meaning-based search powered by OpenAI embeddings + pgvector
+- 🤖 **Grounded QA:** LLM-powered answers with function calling, sourced from your documents
+- 🔐 **Access Control (RBAC):** Users can only access documents they're authorized to view
+- ⚡ **Asynchronous Processing:** File parsing, chunking, and embedding run in the background via Celery
 
-## 🏗️ Teknoloji Yığını
+## 🏗️ Technology Stack
 
 - **Backend:** Python 3.12+ · Django 5.2 LTS
-- **Veritabanı:** PostgreSQL 16 + pgvector
-- **Cache & Broker:** Redis 7
-- **Asenkron İşleme:** Celery 5 + django-celery-beat
+- **Database:** PostgreSQL 16 + pgvector
+- **Cache & Message Broker:** Redis 7
+- **Async Task Processing:** Celery 5 + django-celery-beat
 - **LLM:** OpenAI (gpt-4o-mini + text-embedding-3-small)
-- **Sunucu:** Gunicorn + NGINX
-- **Konteynerizasyon:** Docker Compose
+- **Server:** Gunicorn + NGINX
+- **Containerization:** Docker Compose
 
-## 📅 Yol Haritası
+## 📅 Roadmap
 
-Proje 10 faz halinde geliştirilecektir:
+The project is developed in 10 phases:
 
-- **Faz 0:** Ortam Kurulumu & Django İskeleti
-- **Faz 1:** Docker, PostgreSQL/pgvector, Redis
-- **Faz 2:** Kullanıcı, Kayıt/Giriş, RBAC
-- **Faz 3:** Doküman Modeli & Yükleme
-- **Faz 4:** Celery & Asenkron İşleme
-- **Faz 5:** Parsing, Normalizasyon, Chunking
-- **Faz 6:** Embeddings & Semantik Arama
-- **Faz 7:** LLM QA & Function Calling
-- **Faz 8:** Frontend (Django Templates)
-- **Faz 9:** Test, Güvenlik, Performans
-- **Faz 10:** Production Dağıtım
+- **Phase 0:** Environment Setup & Django Scaffolding
+- **Phase 1:** Docker, PostgreSQL/pgvector, Redis
+- **Phase 2:** User Management, Authentication, RBAC
+- **Phase 3:** Document Model & Upload
+- **Phase 4:** Celery & Async Processing
+- **Phase 5:** Parsing, Normalization, Chunking
+- **Phase 6:** Embeddings & Semantic Search
+- **Phase 7:** LLM QA & Function Calling
+- **Phase 8:** Frontend (Django Templates)
+- **Phase 9:** Testing, Security, Performance
+- **Phase 10:** Production Deployment
 
-Detaylı yol haritası için bkz. [`document_intelligence_platform_roadmap.md`](./document_intelligence_platform_roadmap.md)
+For detailed roadmap, see [`document_intelligence_platform_roadmap.md`](./document_intelligence_platform_roadmap.md)
 
-## 🚀 Hızlı Başlangıç
+## 🚀 Quick Start
 
-### Gereksinimler
+### Requirements
 
 - Python 3.12+
 - Docker & Docker Compose
 - Git
 
-### Kurulum (Faz 0 sonrası)
+### Installation (After Phase 0)
 
 ```bash
-# Repo'yu klonla
+# Clone the repository
 git clone https://github.com/yourusername/document-intelligence-platform.git
 cd document-intelligence-platform
 
-# Virtual environment oluştur
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Bağımlılıkları yükle
+# Install dependencies
 pip install -r requirements.txt
 
-# Veritabanı migrasyonlarını çalıştır
+# Run database migrations
 python manage.py migrate
 
-# Geliştirme sunucusunu başlat
+# Start development server
 python manage.py runserver
 ```
 
-## 📝 Lisans
+## 📝 License
 
-MIT License - Detaylar için [`LICENSE`](./LICENSE) dosyasına bakın.
+MIT License - See [`LICENSE`](./LICENSE) file for details.
 
-## 👤 Yazar
+## 👤 Author
 
 Teoma
 
 ---
 
-**Not:** Bu proje aktif geliştirme aşamasındadır. Faz 0 kurulumu devam etmektedir.
+**Note:** This project is under active development. Phase 0 setup is in progress.
