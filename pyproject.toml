@@ -84,9 +84,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Teowol/document-intellegence-platform"
-Repository = "https://github.com/Teowol/document-intellegence-platform.git"
-Issues = "https://github.com/Teowol/document-intellegence-platform/issues"
+Homepage = "https://github.com/Teowol/document-intelligence-platform"
+Repository = "https://github.com/Teowol/document-intelligence-platform.git"
+Issues = "https://github.com/Teowol/document-intelligence-platform/issues"
 
 [tool.setuptools]
 packages = ["src"]

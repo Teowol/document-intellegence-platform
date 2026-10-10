@@ -54,7 +54,7 @@ For detailed roadmap, see [`document_intelligence_platform_roadmap.md`](./docume
 
 ```bash
 # Clone the repository
-git clone https://github.com/Teowol/document-intellegence-platform.git
+git clone https://github.com/Teowol/document-intelligence-platform.git
 cd document-intellegence-platform
 
 # Start infrastructure (PostgreSQL + pgvector, Redis)
