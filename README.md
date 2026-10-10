@@ -20,21 +20,23 @@ A secure platform where users can upload **PDF, Excel, CSV, TXT, and Markdown** 
 - **Server:** Gunicorn + NGINX
 - **Containerization:** Docker Compose
 
-## 📅 Roadmap
+## 📅 Roadmap & Progress
 
-The project is developed in 10 phases:
+The project is developed in phases:
 
-- **Phase 0:** Environment Setup & Django Scaffolding
-- **Phase 1:** Docker, PostgreSQL/pgvector, Redis
-- **Phase 2:** User Management, Authentication, RBAC
-- **Phase 3:** Document Model & Upload
-- **Phase 4:** Celery & Async Processing
-- **Phase 5:** Parsing, Normalization, Chunking
-- **Phase 6:** Embeddings & Semantic Search
-- **Phase 7:** LLM QA & Function Calling
-- **Phase 8:** Frontend (Django Templates)
-- **Phase 9:** Testing, Security, Performance
-- **Phase 10:** Production Deployment
+| Phase | Title | Status |
+|-------|-------|--------|
+| 0 | Environment Setup & Django Scaffolding | ✅ Done |
+| 1 | Docker, PostgreSQL/pgvector, Redis, `/healthz` | ✅ Done |
+| 2 | User Management, Authentication (allauth), RBAC | ✅ Done |
+| 3 | Document Model & Secure Upload | ⏳ Next |
+| 4 | Celery & Async Processing | ⬜ Planned |
+| 5 | Parsing, Normalization, Chunking | ⬜ Planned |
+| 6 | Embeddings & Semantic Search | ⬜ Planned |
+| 7 | LLM QA & Function Calling | ⬜ Planned |
+| 8 | Frontend (Django Templates) | ⬜ Planned |
+| 9 | Testing, Security, Performance | ⬜ Planned |
+| 10 | Production Deployment | ⬜ Planned |
 
 For detailed roadmap, see [`document_intelligence_platform_roadmap.md`](./document_intelligence_platform_roadmap.md)
 
@@ -46,25 +48,44 @@ For detailed roadmap, see [`document_intelligence_platform_roadmap.md`](./docume
 - Docker & Docker Compose
 - Git
 
-### Installation (After Phase 0)
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/document-intelligence-platform.git
-cd document-intelligence-platform
+git clone https://github.com/Teowol/document-intellegence-platform.git
+cd document-intellegence-platform
+
+# Start infrastructure (PostgreSQL + pgvector, Redis)
+docker compose -f docker-compose.dev.yml up -d
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Configure environment
+cp .env.example .env  # adjust DATABASE_URL / SECRET_KEY if needed
 
 # Run database migrations
+cd src
 python manage.py migrate
 
 # Start development server
 python manage.py runserver
+```
+
+The app is then available at http://127.0.0.1:8000/ (redirects to login), with:
+- Admin panel: `/admin/`
+- Health check: `/healthz` (reports database + Redis status)
+- Sign up / log in / log out: `/accounts/signup/`, `/accounts/login/`
+
+### Running Tests
+
+```bash
+cd src
+python -m pytest accounts -q --no-cov
 ```
 
 ## 📝 License
@@ -77,4 +98,4 @@ Teoman Ünal
 
 ---
 
-**Note:** This project is under active development. Phase 0 setup is in progress.
+**Note:** This project is under active development. Phases 0–2 are complete (scaffolding, Docker infra with PostgreSQL/pgvector + Redis, and email-based authentication with RBAC roles). Next up: Phase 3 — Document Model & Secure Upload.
