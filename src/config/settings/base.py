@@ -59,10 +59,22 @@ INSTALLED_APPS = [
     "corsheaders",
     "allauth",
     "allauth.account",
+    "django_celery_results",
     # Local apps
     "accounts.apps.AccountsConfig",
     "documents.apps.DocumentsConfig",
 ]
+
+# Celery (Phase 4): broker = Redis, results stored in PostgreSQL via
+# django-celery-results. Task time limits protect against runaway parsing.
+CELERY_BROKER_URL = env("REDIS_URL")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24  # 1 day
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_TIME_LIMIT = 60 * 10  # hard kill after 10 min
+CELERY_TASK_SOFT_TIME_LIMIT = 60 * 8
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TASK_DEFAULT_QUEUE = "documents"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

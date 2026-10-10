@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block title %}{{ document.title }}{% endblock %}
 {% block content %}
+{% if document.status == 'uploaded' or document.status == 'processing' %}
+<meta http-equiv="refresh" content="3">
+{% endif %}
 <div class="row justify-content-center">
   <div class="col-md-8">
     <div class="card shadow-sm">
       <div class="card-body">
         <h1 class="h3">{{ document.title }}</h1>
-        <span class="badge bg-info text-dark">{{ document.get_status_display }}</span>
+        <span class="badge {% if document.status == 'ready' %}bg-success{% elif document.status == 'error' %}bg-danger{% elif document.status == 'processing' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+          {{ document.get_status_display }}
+          {% if document.status == 'uploaded' or document.status == 'processing' %}
+          <span class="spinner-border spinner-border-sm ms-1" role="status"></span>
+          {% endif %}
+        </span>
         <span class="badge bg-light text-dark">{{ document.get_doc_type_display }}</span>
         {% if document.is_public %}<span class="badge bg-secondary">public</span>{% endif %}
         <hr>

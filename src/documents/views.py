@@ -11,6 +11,7 @@ from accounts.models import CustomUser
 
 from .forms import DocumentUploadForm
 from .models import Document
+from .tasks import process_document
 from .validators import sanitize_filename, validate_upload
 
 
@@ -68,7 +69,9 @@ class DocumentUploadView(LoginRequiredMixin, CreateView):
         doc.original_filename = sanitize_filename(file.name)
         doc.status = Document.Status.UPLOADED
         doc.save()
-        messages.success(self.request, "Document uploaded successfully.")
+        # Phase 4: hand off to the background worker; the request returns fast.
+        process_document.delay(doc.pk)
+        messages.success(self.request, "Document uploaded; processing started.")
         return redirect("documents:detail", pk=doc.pk)
 
 

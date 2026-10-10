@@ -30,7 +30,8 @@ The project is developed in phases:
 | 1 | Docker, PostgreSQL/pgvector, Redis, `/healthz` | ✅ Done |
 | 2 | User Management, Authentication (allauth), RBAC | ✅ Done |
 | 3 | Document Model & Secure Upload | ✅ Done |
-| 4 | Celery & Async Processing | ⏳ Next |
+| 4 | Celery & Async Processing | ✅ Done |
+| 5 | Parsing, Normalization, Chunking | ⏳ Next |
 | 4 | Celery & Async Processing | ⬜ Planned |
 | 5 | Parsing, Normalization, Chunking | ⬜ Planned |
 | 6 | Embeddings & Semantic Search | ⬜ Planned |
@@ -77,6 +78,18 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+### Background processing (Celery)
+
+Uploads are processed asynchronously. Start the worker alongside the dev server:
+
+```bash
+cd src
+../venv/Scripts/activate  # or: source venv/bin/activate
+celery -A config worker --pool=solo --loglevel=info   # Windows: solo pool
+```
+
+On Linux/macOS omit `--pool=solo`. Pipeline: upload → task `documents.tasks.process_document` → status `processing` → `ready` (visible live on the detail page, which auto-refreshes).
+
 The app is then available at http://127.0.0.1:8000/ (redirects to login), with:
 - Admin panel: `/admin/`
 - Health check: `/healthz` (reports database + Redis status)
@@ -100,4 +113,4 @@ Teoman Ünal
 
 ---
 
-**Note:** This project is under active development. Phases 0–3 are complete (scaffolding; Docker infra with PostgreSQL/pgvector + Redis; email-based authentication with RBAC roles; secure document upload with magic-byte validation). Next up: Phase 4 — Celery & Async Processing.
+**Note:** This project is under active development. Phases 0–4 are complete (scaffolding; Docker infra with PostgreSQL/pgvector + Redis; email auth with RBAC; secure upload with magic-byte validation; Celery async processing pipeline). Next up: Phase 5 — Parsing, Normalization & Chunking.
