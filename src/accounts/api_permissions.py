@@ -22,8 +22,9 @@ class OwnerOrReadOnly:
 
 class EditorCanDelete:
     """
-    Delete allowed for the owner or editor/admin roles.
-    Other writes follow OwnerOrReadOnly semantics.
+    Phase 3 refinement (DoD: "başkasının dosyası silinemez"):
+    delete allowed only for the owner or an admin. Editors may delete
+    their own uploads (covered by owner check).
     """
 
     def has_permission(self, request, view):
@@ -32,7 +33,7 @@ class EditorCanDelete:
     def has_object_permission(self, request, view, obj):
         if request.method == "DELETE":
             user = request.user
-            if user.is_superuser or getattr(user, "role", "") in ("admin", "editor"):
+            if user.is_superuser or getattr(user, "role", "") == "admin":
                 return True
             return getattr(obj, "owner_id", None) == user.pk
         return True

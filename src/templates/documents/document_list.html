@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Documents</h1>
+  <a href="{% url 'documents:upload' %}" class="btn btn-primary">Upload</a>
+</div>
+
+<table class="table table-hover bg-white shadow-sm">
+  <thead>
+    <tr><th>Title</th><th>Type</th><th>Status</th><th>Size</th><th>Owner</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for doc in object_list %}
+    <tr>
+      <td><a href="{% url 'documents:detail' doc.pk %}">{{ doc.title }}</a>
+        {% if doc.is_public %}<span class="badge bg-secondary">public</span>{% endif %}
+      </td>
+      <td>{{ doc.get_doc_type_display }}</td>
+      <td>{{ doc.get_status_display }}</td>
+      <td>{{ doc.size_bytes|filesizeformat }}</td>
+      <td>{{ doc.owner.email }}</td>
+      <td>
+        {% if doc.owner_id == user.pk or user.is_superuser %}
+        <form method="post" action="{% url 'documents:delete' doc.pk %}" class="d-inline"
+              onsubmit="return confirm('Delete this document?');">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="text-center text-muted py-4">No documents yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

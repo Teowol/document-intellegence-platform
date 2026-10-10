@@ -1,3 +1,99 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, DetailView, ListView
+from django.views.generic.edit import CreateView
 
-# Create your views here.
+from accounts.models import CustomUser
+
+from .forms import DocumentUploadForm
+from .models import Document
+from .validators import sanitize_filename, validate_upload
+
+
+def _is_admin(user) -> bool:
+    return user.is_superuser or user.role == CustomUser.Roles.ADMIN
+
+
+def _is_editor(user) -> bool:
+    return user.is_superuser or user.role in (
+        CustomUser.Roles.ADMIN,
+        CustomUser.Roles.EDITOR,
+    )
+
+
+class DocumentListView(LoginRequiredMixin, ListView):
+    """Own documents plus public ones (admins see everything)."""
+
+    model = Document
+    template_name = "documents/document_list.html"
+    paginate_by = 20
+
+    def get_queryset(self):
+        user = self.request.user
+        if _is_admin(user):
+            return Document.objects.select_related("owner")
+        return Document.objects.filter(Q(owner=user) | Q(is_public=True)).select_related(
+            "owner"
+        )
+
+
+class DocumentUploadView(LoginRequiredMixin, CreateView):
+    """
+    Secure upload: server-side size limit + magic-byte type check.
+    The browser-reported content type is never trusted.
+    """
+
+    model = Document
+    form_class = DocumentUploadForm
+    template_name = "documents/document_form.html"
+    success_url = reverse_lazy("documents:list")
+
+    def form_valid(self, form):
+        file = form.cleaned_data["file"]
+        try:
+            doc_type, mime = validate_upload(file)
+        except ValidationError as exc:
+            form.add_error("file", exc.message)
+            return self.form_invalid(form)
+
+        doc = form.save(commit=False)
+        doc.owner = self.request.user
+        doc.doc_type = doc_type
+        doc.mime_type = mime
+        doc.size_bytes = file.size
+        doc.original_filename = sanitize_filename(file.name)
+        doc.status = Document.Status.UPLOADED
+        doc.save()
+        messages.success(self.request, "Document uploaded successfully.")
+        return redirect("documents:detail", pk=doc.pk)
+
+
+class DocumentDetailView(LoginRequiredMixin, DetailView):
+    model = Document
+    template_name = "documents/document_detail.html"
+
+    def get_object(self, queryset=None):
+        doc = get_object_or_404(Document, pk=self.kwargs["pk"])
+        user = self.request.user
+        if doc.owner_id == user.pk or doc.is_public or _is_admin(user):
+            return doc
+        raise PermissionDenied("Bu dokümanı görüntüleme yetkiniz yok.")
+
+
+class DocumentDeleteView(LoginRequiredMixin, DeleteView):
+    """Only the owner (or an admin) may delete; others get 403."""
+
+    model = Document
+    template_name = "documents/document_confirm_delete.html"
+    success_url = reverse_lazy("documents:list")
+
+    def get_object(self, queryset=None):
+        doc = get_object_or_404(Document, pk=self.kwargs["pk"])
+        user = self.request.user
+        if doc.owner_id == user.pk or _is_admin(user):
+            return doc
+        raise PermissionDenied("Bu dokümanı silme yetkiniz yok.")

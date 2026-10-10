@@ -1,17 +1,85 @@
+from django.conf import settings
 from django.db import models
 from pgvector.django import VectorField
 
 EMBEDDING_DIMENSIONS = 1536  # text-embedding-3-small output size
 
 
+class Document(models.Model):
+    """
+    An uploaded document owned by a user.
+
+    Status machine (Phase 4 drives the transitions via Celery):
+        uploaded -> processing -> ready
+                          \-------> error
+    """
+
+    class Status(models.TextChoices):
+        UPLOADED = "uploaded", "Uploaded"
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+        ERROR = "error", "Error"
+
+    class DocType(models.TextChoices):
+        PDF = "pdf", "PDF"
+        XLSX = "xlsx", "Excel"
+        CSV = "csv", "CSV"
+        TXT = "txt", "Text"
+        MD = "md", "Markdown"
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="documents",
+    )
+    file = models.FileField(upload_to="documents/%Y/%m/")
+    original_filename = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    doc_type = models.CharField(
+        max_length=5, choices=DocType.choices, db_index=True
+    )
+    mime_type = models.CharField(max_length=100, blank=True, default="")
+    size_bytes = models.PositiveBigIntegerField(default=0)
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.UPLOADED,
+        db_index=True,
+    )
+    error_message = models.TextField(blank=True, default="")
+    is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Document"
+        verbose_name_plural = "Documents"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.title} [{self.status}]"
+
+    def delete(self, *args, **kwargs):
+        """Remove the stored file from disk along with the DB row."""
+        self.file.delete(save=False)
+        super().delete(*args, **kwargs)
+
+
 class DocumentChunk(models.Model):
     """
-    Minimal chunk model for Phase 1 (pgvector migration sanity check).
+    One searchable chunk of a document.
 
-    Phase 3 will extend this with a Document FK; Phase 6 fills the
-    embedding column during batch embedding.
+    Text/metadata are filled in Phase 5 (parsing + chunking); the embedding
+    column is filled in Phase 6. Exists since Phase 1 for schema sanity.
     """
 
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="chunks",
+    )
+    page_number = models.PositiveIntegerField(null=True, blank=True)
+    chunk_index = models.PositiveIntegerField(default=0)
     text = models.TextField()
     embedding = VectorField(
         dimensions=EMBEDDING_DIMENSIONS,
@@ -24,7 +92,13 @@ class DocumentChunk(models.Model):
     class Meta:
         verbose_name = "Document chunk"
         verbose_name_plural = "Document chunks"
-        ordering = ["-created_at"]
+        ordering = ["document", "chunk_index"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["document", "chunk_index"],
+                name="unique_chunk_index_per_document",
+            ),
+        ]
 
     def __str__(self):
-        return f"Chunk {self.pk} ({len(self.text)} chars)"
+        return f"Chunk {self.chunk_index} of {self.document_id}"

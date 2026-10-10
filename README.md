@@ -29,7 +29,8 @@ The project is developed in phases:
 | 0 | Environment Setup & Django Scaffolding | ✅ Done |
 | 1 | Docker, PostgreSQL/pgvector, Redis, `/healthz` | ✅ Done |
 | 2 | User Management, Authentication (allauth), RBAC | ✅ Done |
-| 3 | Document Model & Secure Upload | ⏳ Next |
+| 3 | Document Model & Secure Upload | ✅ Done |
+| 4 | Celery & Async Processing | ⏳ Next |
 | 4 | Celery & Async Processing | ⬜ Planned |
 | 5 | Parsing, Normalization, Chunking | ⬜ Planned |
 | 6 | Embeddings & Semantic Search | ⬜ Planned |
@@ -80,6 +81,7 @@ The app is then available at http://127.0.0.1:8000/ (redirects to login), with:
 - Admin panel: `/admin/`
 - Health check: `/healthz` (reports database + Redis status)
 - Sign up / log in / log out: `/accounts/signup/`, `/accounts/login/`
+- Documents: `/documents/` (upload, list, detail, delete with RBAC)
 
 ### Running Tests
 
@@ -98,4 +100,4 @@ Teoman Ünal
 
 ---
 
-**Note:** This project is under active development. Phases 0–2 are complete (scaffolding, Docker infra with PostgreSQL/pgvector + Redis, and email-based authentication with RBAC roles). Next up: Phase 3 — Document Model & Secure Upload.
+**Note:** This project is under active development. Phases 0–3 are complete (scaffolding; Docker infra with PostgreSQL/pgvector + Redis; email-based authentication with RBAC roles; secure document upload with magic-byte validation). Next up: Phase 4 — Celery & Async Processing.

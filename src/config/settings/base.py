@@ -27,6 +27,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(str, "localhost,127.0.0.1"),
     DATABASE_URL=(str, "postgresql://dip_user:dip_password@localhost:5432/document_intelligence"),
     REDIS_URL=(str, "redis://localhost:6379/0"),
+    MAX_UPLOAD_SIZE=(int, 25 * 1024 * 1024),  # 25 MB (Phase 3)
 )
 
 # Read .env file

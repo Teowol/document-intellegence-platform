@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ document.title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h3">{{ document.title }}</h1>
+        <span class="badge bg-info text-dark">{{ document.get_status_display }}</span>
+        <span class="badge bg-light text-dark">{{ document.get_doc_type_display }}</span>
+        {% if document.is_public %}<span class="badge bg-secondary">public</span>{% endif %}
+        <hr>
+        <p class="mb-1"><strong>File:</strong> {{ document.original_filename }}</p>
+        <p class="mb-1"><strong>Size:</strong> {{ document.size_bytes|filesizeformat }}</p>
+        <p class="mb-1"><strong>Owner:</strong> {{ document.owner.email }}</p>
+        <p class="mb-1"><strong>Uploaded:</strong> {{ document.created_at|date:"Y-m-d H:i" }}</p>
+        {% if document.error_message %}<p class="text-danger">{{ document.error_message }}</p>{% endif %}
+        {% if document.owner_id == user.pk or user.is_superuser %}
+        <a href="{% url 'documents:delete' document.pk %}" class="btn btn-outline-danger mt-2">Delete</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
