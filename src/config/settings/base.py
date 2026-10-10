@@ -24,6 +24,8 @@ env = environ.Env(
     DEBUG=(bool, True),
     SECRET_KEY=(str, "django-insecure-dev-key-change-in-production"),
     ALLOWED_HOSTS=(str, "localhost,127.0.0.1"),
+    DATABASE_URL=(str, "postgresql://dip_user:dip_password@localhost:5432/document_intelligence"),
+    REDIS_URL=(str, "redis://localhost:6379/0"),
 )
 
 # Read .env file
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Local apps
     "accounts.apps.AccountsConfig",
+    "documents.apps.DocumentsConfig",
 ]
 
 MIDDLEWARE = [
@@ -90,11 +93,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# PostgreSQL 16 + pgvector via docker-compose.dev.yml (Phase 1)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": env.db_url(
+        "DATABASE_URL",
+        engine="django.db.backends.postgresql",
+    ),
+}
+
+# Redis — cache backend (Phase 1) + Celery broker (Phase 4)
+REDIS_URL = env("REDIS_URL")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
     }
 }
 
