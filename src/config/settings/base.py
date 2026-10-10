@@ -16,7 +16,8 @@ from pathlib import Path
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# settings/ is a package: base.py -> settings/ -> config/ -> src/
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 
 # Load environment variables
@@ -55,10 +56,26 @@ INSTALLED_APPS = [
     # Third-party apps
     "rest_framework",
     "corsheaders",
+    "allauth",
+    "allauth.account",
     # Local apps
     "accounts.apps.AccountsConfig",
     "documents.apps.DocumentsConfig",
 ]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# django-allauth (Phase 2): email-based auth
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # dev-friendly; tighten in Phase 9
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SIGNUP_FIELDS = ["email**", "username", "password1*", "password2*"]
+LOGIN_REDIRECT_URL = "accounts:profile"
+LOGOUT_REDIRECT_URL = "account_login"
+LOGIN_URL = "account_login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -69,6 +86,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -76,7 +94,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
